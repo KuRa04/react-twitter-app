@@ -11,7 +11,11 @@ const TweetInput: React.FC = () => {
   const user = useSelector(selectUser);
   const [tweetImage, setTweetImage] = useState<File | null>(null);
   const [tweetMsg, setTweetMsg] = useState('');
-  const [group, setGroup] = useState('')
+  const [group, setGroup] = useState('');
+  const [isGroupEditing, setGroupEditing] = useState(false);
+  const groupEdit = () => {
+    setGroupEditing(!isGroupEditing);
+  }
   const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files![0]){
       setTweetImage(e.target.files![0]);
@@ -57,6 +61,7 @@ const TweetInput: React.FC = () => {
       });
       db.collection('groups').add({
         groupname: group,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       })
     }
     setTweetImage(null);
@@ -97,14 +102,22 @@ const TweetInput: React.FC = () => {
               />
             </label>
           </IconButton>
-          <input
-            className={styles.tweet_input}
-            placeholder="what's groups?"
-            type="text"
-            autoFocus
-            value={group}
-            onChange={(e) => setGroup(e.target.value)}
-          />
+          {isGroupEditing ? (
+            <>
+              <input
+                className={styles.tweet_input}
+                placeholder="what's groups?"
+                type="text"
+                autoFocus
+                value={group}
+                onChange={(e) => setGroup(e.target.value)}
+              />
+            </>
+          ) : (
+            <>
+              <p className={styles.show_group}>group一覧</p>
+            </>)}
+            <a className={styles.add_group} onClick={groupEdit}>{isGroupEditing ? 'show group' : 'add group'}</a>
         </div>
         <Button
           type="submit"
