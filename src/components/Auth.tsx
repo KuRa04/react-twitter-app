@@ -2,7 +2,7 @@ import React, { useState }from 'react';
 import styles from './Auth.module.css';
 import {  useDispatch } from 'react-redux';
 import { updateUserProfile } from '../features/userSlice'
-import { auth, provider, storage } from '../firebase';
+import { auth, provider, storage, db } from '../firebase';
 
 import {
   Avatar,
@@ -122,11 +122,19 @@ const Auth: React.FC = ()  => {
         .map((n) => S[n % S.length])
         .join('');
       const fileName = randomChar + '_' + avatarImage.name;
-      
+
       await storage.ref(`avatars/${fileName}`).put(avatarImage);
       url = await storage.ref('avatars').child(fileName).getDownloadURL();
     }
     await authUser.user?.updateProfile({
+      displayName: username,
+      photoURL: url,
+    });
+    db.collection('posts').add({
+      displayName: username,
+      photoURL: url,
+    });
+    db.collection('users').add({
       displayName: username,
       photoURL: url,
     });

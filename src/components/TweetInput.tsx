@@ -11,6 +11,7 @@ const TweetInput: React.FC = () => {
   const user = useSelector(selectUser);
   const [tweetImage, setTweetImage] = useState<File | null>(null);
   const [tweetMsg, setTweetMsg] = useState('');
+  const [group, setGroup] = useState('')
   const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files![0]){
       setTweetImage(e.target.files![0]);
@@ -30,7 +31,7 @@ const TweetInput: React.FC = () => {
       const uploadTweetImg = storage.ref(`images/${fileName}`).put(tweetImage);
       uploadTweetImg.on(
         firebase.storage.TaskEvent.STATE_CHANGED,
-        ()=> {},
+        () => {},
         (err) => {
           alert(err.message);
         }, async () => {
@@ -54,9 +55,14 @@ const TweetInput: React.FC = () => {
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         username: user.displayName,
       });
+      db.collection('groups').add({
+        groupname: group,
+      })
     }
     setTweetImage(null);
     setTweetMsg('');
+    setGroup('');
+
   };
   return (
     <>
@@ -91,6 +97,14 @@ const TweetInput: React.FC = () => {
               />
             </label>
           </IconButton>
+          <input
+            className={styles.tweet_input}
+            placeholder="what's groups?"
+            type="text"
+            autoFocus
+            value={group}
+            onChange={(e) => setGroup(e.target.value)}
+          />
         </div>
         <Button
           type="submit"
