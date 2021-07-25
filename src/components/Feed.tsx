@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Feed.module.css';
 import { db } from '../firebase';
+import firebase from 'firebase/app'
+import { useDocumentData, useCollectionData } from 'react-firebase-hooks/firestore'
 import TweetInput from './TweetInput';
 import Post from './Post'
 
